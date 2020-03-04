@@ -1,5 +1,4 @@
 #include <Preferences.h>
-
 #include <WiFi.h>
 
 const char ver[] = {"1.5"};
@@ -33,6 +32,9 @@ IPAddress secondaryDNS(8, 8, 4, 4); // optional
 #define Inp8 22
 #define Led 23
 #define BUFSIZE 51
+
+static byte relayPins[8] = {Rly1, Rly2, Rly3, Rly4, Rly5, Rly6, Rly7, Rly8};
+static byte inputPins[8] = {Inp1, Inp2, Inp3, Inp4, Inp5, Inp6, Inp7, Inp8};
 
 char buffer[BUFSIZE];
 char ssid[BUFSIZE];
@@ -151,6 +153,13 @@ void wifi_connect(void) {
     }
   }
   WiFi.mode(WIFI_STA);
+
+  // Following config call required to enable setting hostname
+  // See: https://github.com/espressif/arduino-esp32/issues/2537#issuecomment-508558849
+  WiFi.config(INADDR_NONE, INADDR_NONE, INADDR_NONE);
+
+  // Now you can access the device at: http://robot-electronics/
+  WiFi.setHostname("robot-electronics");
 
   while (WiFi.status() != WL_CONNECTED) {
     WiFi.disconnect();

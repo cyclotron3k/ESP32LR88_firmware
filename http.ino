@@ -1,5 +1,7 @@
+#include <ArduinoJson.h>
+
 enum {
-  NONE = 0, INDEX, XML
+  NONE = 0, INDEX, XML, JSON
 };
 
 void modeHttp(void) {
@@ -23,7 +25,7 @@ void modeHttp(void) {
               // HTTP headers always start with a response code (e.g. HTTP/1.1 200 OK)
               // and a content-type so the client knows what's coming, then a blank line:
               client.println("HTTP/1.1 200 OK");
-              client.println("Content-type:text/html");
+              client.println("Content-type: text/html");
               client.println();
               // the content of the HTTP response follows the header:
 
@@ -31,23 +33,18 @@ void modeHttp(void) {
               client.println("<p style='text-align:center'><b>ESP32LR88</b> <br></p>");
               client.println("<style>button{width:44%;height:35px;margin:5px;}</style>");
 
-              client.println("<button id='Rly1'; onclick='setRly(1)'; >Relay 1</button>");
-              client.println("<button id='Rly2'; onclick='setRly(2)'; >Relay 2</button>");
-              client.println("<button id='Rly3'; onclick='setRly(3)'; >Relay 3</button>");
-              client.println("<button id='Rly4'; onclick='setRly(4)'; >Relay 4</button>");
-              client.println("<button id='Rly5'; onclick='setRly(5)'; >Relay 5</button>");
-              client.println("<button id='Rly6'; onclick='setRly(6)'; >Relay 6</button>");
-              client.println("<button id='Rly7'; onclick='setRly(7)'; >Relay 7</button>");
-              client.println("<button id='Rly8'; onclick='setRly(8)'; >Relay 8</button>");
+              char buffer[64];
+              for (int i = 1; i <= 8; i++) {
+                sprintf(buffer, "<button id='Rly%d' onclick='setRly(%d)'>Relay %d</button>", i, i, i);
+                client.println(buffer);
+              }
 
-              client.println("<br><br><div> Inputs 1<input type='radio' value='' id='Inp1'>");
-              client.println("<input type='radio' id='Inp2'>");
-              client.println("<input type='radio' id='Inp3'>");
-              client.println("<input type='radio' id='Inp4'>");
-              client.println("<input type='radio' id='Inp5'>");
-              client.println("<input type='radio' id='Inp6'>");
-              client.println("<input type='radio' id='Inp7'>");
-              client.println("<input type='radio' id='Inp8'>8 </div>");
+              client.println("<br><br><div> Inputs 1");
+              for (int i = 1; i <= 8; i++) {
+                sprintf(buffer, "<input type='radio' id='Inp%d'>", i);
+                client.println(buffer);
+              }
+              client.println("8 </div>");
 
               client.println("<script>");
               client.println("var xhttp = new XMLHttpRequest();");
@@ -112,57 +109,55 @@ void modeHttp(void) {
               client.println("</script>");
               client.println("");
 
-              client.print("</body>");
+              client.print("</body></html>");
 
               // The HTTP response ends with another blank line:
               client.println();
             } else if (page == XML) {
               client.println("HTTP/1.1 200 OK");
-              client.println("Content-type:application/xml");
+              client.println("Content-type: application/xml");
               client.println();
               client.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
               client.println("<ESP32LR88DATA>");
+
               client.println("<RELAYS>");
-              if (digitalRead(Rly1)) client.println("<RLY1>on</RLY1>");
-              else client.println("<RLY1>off</RLY1>");
-              if (digitalRead(Rly2)) client.println("<RLY2>on</RLY2>");
-              else client.println("<RLY2>off</RLY2>");
-              if (digitalRead(Rly3)) client.println("<RLY3>on</RLY3>");
-              else client.println("<RLY3>off</RLY3>");
-              if (digitalRead(Rly4)) client.println("<RLY4>on</RLY4>");
-              else client.println("<RLY4>off</RLY4>");
-              if (digitalRead(Rly5)) client.println("<RLY5>on</RLY5>");
-              else client.println("<RLY5>off</RLY5>");
-              if (digitalRead(Rly6)) client.println("<RLY6>on</RLY6>");
-              else client.println("<RLY6>off</RLY6>");
-              if (digitalRead(Rly7)) client.println("<RLY7>on</RLY7>");
-              else client.println("<RLY7>off</RLY7>");
-              if (digitalRead(Rly8)) client.println("<RLY8>on</RLY8>");
-              else client.println("<RLY8>off</RLY8>");
+              char relayLn[32];
+              for (int i = 0; i < 8; i++) {
+                sprintf(relayLn, "<RLY%d>%s</RLY%d>", i+1, (digitalRead(relayPins[i]) ? "on" : "off"), i+1);
+                client.println(relayLn);
+              }
               client.println("</RELAYS>");
+
               client.println("<INPUTS>");
-              if (digitalRead(Inp1)) client.println("<INP1>1</INP1>");
-              else client.println("<INP1>0</INP1>");
-              if (digitalRead(Inp2)) client.println("<INP2>1</INP2>");
-              else client.println("<INP2>0</INP2>");
-              if (digitalRead(Inp3)) client.println("<INP3>1</INP3>");
-              else client.println("<INP3>0</INP3>");
-              if (digitalRead(Inp4)) client.println("<INP4>1</INP4>");
-              else client.println("<INP4>0</INP4>");
-              if (digitalRead(Inp5)) client.println("<INP5>1</INP5>");
-              else client.println("<INP5>0</INP5>");
-              if (digitalRead(Inp6)) client.println("<INP6>1</INP6>");
-              else client.println("<INP6>0</INP6>");
-              if (digitalRead(Inp7)) client.println("<INP7>1</INP7>");
-              else client.println("<INP7>0</INP7>");
-              if (digitalRead(Inp8)) client.println("<INP8>1</INP8>");
-              else client.println("<INP8>0</INP8>");
+              for (int i = 0; i < 8; i++) {
+                sprintf(relayLn, "<INP%d>%d</INP%d>", i+1, digitalRead(inputPins[i]), i+1);
+                client.println(relayLn);
+              }
               client.println("</INPUTS>");
+
               client.println("</ESP32LR88DATA>");
               client.println();
-            } else {
+            } else if (page == JSON) {
               client.println("HTTP/1.1 200 OK");
-              client.println("Content-type:text/html");
+              client.println("Content-type: application/json");
+              client.println();
+
+              const int capacity = JSON_OBJECT_SIZE(2) + 2 * JSON_ARRAY_SIZE(8);
+              StaticJsonDocument<capacity> doc;
+              JsonArray relays = doc.createNestedArray("relays");
+              JsonArray inputs = doc.createNestedArray("inputs");
+              for (int i = 0; i < 8; i++) {
+                relays.add(digitalRead(relayPins[i]));
+                inputs.add(digitalRead(inputPins[i]));
+              }
+
+              String output = "";
+              serializeJson(doc, output);
+              client.println(output);
+              client.println();
+            } else {
+              client.println("HTTP/1.1 404 Not Found");
+              client.println("Content-type: text/html");
               client.println();
               client.println();
             }
@@ -172,6 +167,7 @@ void modeHttp(void) {
             if (currentLine.startsWith("GET / ")) page = INDEX;
             else if (currentLine.startsWith("GET /INDEX.HTM")) page = INDEX;
             else if (currentLine.startsWith("GET /STATUS.XML")) page = XML;
+            else if (currentLine.startsWith("GET /STATUS.JSON")) page = JSON;
             else if (currentLine.startsWith("GET /?RLY")) page = XML;
             currentLine = "";
           }
