@@ -182,111 +182,14 @@ void modeHttp(void) {
           if ((currentLine.substring(pos, pos + 4) == "?RLY") && (pos > 0)) {
             int rly = currentLine.charAt(pos + 4) - 0x30;
             int action = currentLine.charAt(pos + 6) - 0x30;
-            switch (rly) {
+
+            switch (action) {
+            case 0:
             case 1:
-              switch (action) {
-              case 0:
-                digitalWrite(Rly1, 0);
-                break;
-              case 1:
-                digitalWrite(Rly1, 1);
-                break;
-              case 2:
-                digitalWrite(Rly1, !digitalRead(Rly1));
-                break;
-              }
+              digitalWrite(relayPins[rly], action);
               break;
             case 2:
-              switch (action) {
-              case 0:
-                digitalWrite(Rly2, 0);
-                break;
-              case 1:
-                digitalWrite(Rly2, 1);
-                break;
-              case 2:
-                digitalWrite(Rly2, !digitalRead(Rly2));
-                break;
-              }
-              break;
-            case 3:
-              switch (action) {
-              case 0:
-                digitalWrite(Rly3, 0);
-                break;
-              case 1:
-                digitalWrite(Rly3, 1);
-                break;
-              case 2:
-                digitalWrite(Rly3, !digitalRead(Rly3));
-                break;
-              }
-              break;
-            case 4:
-              switch (action) {
-              case 0:
-                digitalWrite(Rly4, 0);
-                break;
-              case 1:
-                digitalWrite(Rly4, 1);
-                break;
-              case 2:
-                digitalWrite(Rly4, !digitalRead(Rly4));
-                break;
-              }
-              break;
-            case 5:
-              switch (action) {
-              case 0:
-                digitalWrite(Rly5, 0);
-                break;
-              case 1:
-                digitalWrite(Rly5, 1);
-                break;
-              case 2:
-                digitalWrite(Rly5, !digitalRead(Rly5));
-                break;
-              }
-              break;
-            case 6:
-              switch (action) {
-              case 0:
-                digitalWrite(Rly6, 0);
-                break;
-              case 1:
-                digitalWrite(Rly6, 1);
-                break;
-              case 2:
-                digitalWrite(Rly6, !digitalRead(Rly6));
-                break;
-              }
-              break;
-            case 7:
-              switch (action) {
-              case 0:
-                digitalWrite(Rly7, 0);
-                break;
-              case 1:
-                digitalWrite(Rly7, 1);
-                break;
-              case 2:
-                digitalWrite(Rly7, !digitalRead(Rly7));
-                break;
-              }
-              break;
-            case 8:
-              switch (action) {
-              case 0:
-                digitalWrite(Rly8, 0);
-                break;
-              case 1:
-                digitalWrite(Rly8, 1);
-                break;
-              case 2:
-                digitalWrite(Rly8, !digitalRead(Rly8));
-                break;
-              }
-              break;
+              digitalWrite(relayPins[rly], !digitalRead(relayPins[rly]));
             }
           }
         }

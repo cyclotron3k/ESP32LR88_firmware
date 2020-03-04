@@ -65,32 +65,15 @@ char AsciiPassword[BUFSIZE];
 char Inputs[8] = {2, 2, 2, 2, 2, 2, 2, 2};
 
 void setup() {
-  pinMode(Rly1, OUTPUT); // set the pin modes
-  pinMode(Rly2, OUTPUT);
-  pinMode(Rly3, OUTPUT);
-  pinMode(Rly4, OUTPUT);
-  pinMode(Rly5, OUTPUT);
-  pinMode(Rly6, OUTPUT);
-  pinMode(Rly7, OUTPUT);
-  pinMode(Rly8, OUTPUT);
+  // set the pin modes
+  for (int i = 0; i < 8; i++) {
+    pinMode(relayPins[i], OUTPUT);
+    digitalWrite(relayPins[i], LOW);
+    pinMode(inputPins[i], INPUT);
+  }
+
   pinMode(Led, OUTPUT);
-  digitalWrite(Rly1, LOW);
-  digitalWrite(Rly2, LOW);
-  digitalWrite(Rly3, LOW);
-  digitalWrite(Rly4, LOW);
-  digitalWrite(Rly5, LOW);
-  digitalWrite(Rly6, LOW);
-  digitalWrite(Rly7, LOW);
-  digitalWrite(Rly8, LOW);
   digitalWrite(Led, HIGH);
-  pinMode(Inp1, INPUT);
-  pinMode(Inp2, INPUT);
-  pinMode(Inp3, INPUT);
-  pinMode(Inp4, INPUT);
-  pinMode(Inp5, INPUT);
-  pinMode(Inp6, INPUT);
-  pinMode(Inp7, INPUT);
-  pinMode(Inp8, INPUT);
 
   Serial.begin(115200);
   delay(10);
@@ -107,8 +90,6 @@ void loop() {
 }
 
 void wifi_connect(void) {
-  unsigned int x;
-
   digitalWrite(Led, HIGH);
   Serial.println("");
   nvm.begin("devantech", false); // Note: Namespace name is limited to 15 chars
@@ -165,7 +146,7 @@ void wifi_connect(void) {
     WiFi.disconnect();
     delay(100);
     WiFi.begin(ssid, WifiPassword);
-    for (x = 0; x < 300; x++) {
+    for (int x = 0; x < 300; x++) {
       delay(10);
       serialMonitor();
     }

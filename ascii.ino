@@ -56,7 +56,9 @@ void modeAscii(void) {
           } else if (ALine[idx] == 'I') {
             if (ALine[idx + 1] == 'D') cmd = A_ID; // Get ID command
           }
+
           idx += 2; // first char after the command
+
           switch (cmd) {
           case A_SR:
             while (isspace(ALine[idx])) ++idx; // skip white space
@@ -144,77 +146,22 @@ bool setRelay(char rly, char state) {
   else if (state == '1') state = 1;
   else return false;
 
-  switch (rly) {
-  case '1':
-    digitalWrite(Rly1, state);
-    return true;
-  case '2':
-    digitalWrite(Rly2, state);
-    return true;
-  case '3':
-    digitalWrite(Rly3, state);
-    return true;
-  case '4':
-    digitalWrite(Rly4, state);
-    return true;
-  case '5':
-    digitalWrite(Rly5, state);
-    return true;
-  case '6':
-    digitalWrite(Rly6, state);
-    return true;
-  case '7':
-    digitalWrite(Rly7, state);
-    return true;
-  case '8':
-    digitalWrite(Rly8, state);
-    return true;
-  }
-  return false;
+  int i = rly - '1';
+  if (i < 0 || i >= 8) return false;
+  digitalWrite(relayPins[i], state);
+  return true;
 }
 
 char getRelay(char rly) {
-  switch (rly) {
-  case '1':
-    return digitalRead(Rly1);
-  case '2':
-    return digitalRead(Rly2);
-  case '3':
-    return digitalRead(Rly3);
-  case '4':
-    return digitalRead(Rly4);
-  case '5':
-    return digitalRead(Rly5);
-  case '6':
-    return digitalRead(Rly6);
-  case '7':
-    return digitalRead(Rly7);
-  case '8':
-    return digitalRead(Rly8);
-  }
-  return '?';
+  int i = rly - '1';
+  if (i < 0 || i >= 8) return '?';
+  return digitalRead(relayPins[i]);
 }
 
 char getInput(char inp) {
-  switch (inp) {
-  case '1':
-    return digitalRead(Inp1);
-  case '2':
-    return digitalRead(Inp2);
-  case '3':
-    return digitalRead(Inp3);
-  case '4':
-    return digitalRead(Inp4);
-  case '5':
-    return digitalRead(Inp5);
-  case '6':
-    return digitalRead(Inp6);
-  case '7':
-    return digitalRead(Inp7);
-  case '8':
-    return digitalRead(Inp8);
-  }
-  return '?';
+  int i = inp - '1';
+  if (i < 0 || i >= 8) return '?';
+  return digitalRead(inputPins[i]);
 }
 
 int packRelays(void) {
